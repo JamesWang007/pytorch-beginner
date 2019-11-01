@@ -9,6 +9,7 @@ import numpy as np
 import torch
 from torch import nn
 from torch.autograd import Variable
+import torch.nn.functional as F
 
 x_train = np.array([[3.3], [4.4], [5.5], [6.71], [6.93], [4.168],
                     [9.779], [6.182], [7.59], [2.167], [7.042],
@@ -28,9 +29,15 @@ y_train = torch.from_numpy(y_train)
 class linearRegression(nn.Module):
     def __init__(self):
         super(linearRegression, self).__init__()
-        self.linear = nn.Linear(1, 1)  # input and output is 1 dimension
+        self.linear1= nn.Linear(1, 10)  # input and output is 1 dimension
+        self.linear2 = nn.Linear(10, 10)
+        self.linear = nn.Linear(10, 1)
+        
+        
 
     def forward(self, x):
+        x = F.relu(self.linear1(x))
+        x = F.relu(self.linear2(x))
         out = self.linear(x)
         return out
 
