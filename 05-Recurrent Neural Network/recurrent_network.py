@@ -74,10 +74,10 @@ for epoch in range(num_epoches):
         # 向前传播
         out = model(img)
         loss = criterion(out, label)
-        running_loss += loss.data[0] * label.size(0)
+        running_loss += loss.data * label.size(0)
         _, pred = torch.max(out, 1)
         num_correct = (pred == label).sum()
-        running_acc += num_correct.data[0]
+        running_acc += num_correct.data
         # 向后传播
         optimizer.zero_grad()
         loss.backward()
@@ -109,10 +109,10 @@ for epoch in range(num_epoches):
             label = Variable(label, volatile=True)
         out = model(img)
         loss = criterion(out, label)
-        eval_loss += loss.data[0] * label.size(0)
+        eval_loss += loss.data * label.size(0)
         _, pred = torch.max(out, 1)
         num_correct = (pred == label).sum()
-        eval_acc += num_correct.data[0]
+        eval_acc += num_correct.data
     print('Test Loss: {:.6f}, Acc: {:.6f}'.format(eval_loss / (len(
         test_dataset)), eval_acc / (len(test_dataset))))
     print()
