@@ -26,7 +26,7 @@ z_dimension = 100
 # Image processing
 img_transform = transforms.Compose([
     transforms.ToTensor(),
-    transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
+    transforms.Normalize([0.5],[0.5])
 ])
 # MNIST dataset
 mnist = datasets.MNIST(
@@ -118,7 +118,7 @@ for epoch in range(num_epoch):
         if (i + 1) % 100 == 0:
             print('Epoch [{}/{}], d_loss: {:.6f}, g_loss: {:.6f} '
                   'D real: {:.6f}, D fake: {:.6f}'.format(
-                      epoch, num_epoch, d_loss.data[0], g_loss.data[0],
+                      epoch, num_epoch, d_loss.data, g_loss.data,
                       real_scores.data.mean(), fake_scores.data.mean()))
     if epoch == 0:
         real_images = to_img(real_img.cpu().data)

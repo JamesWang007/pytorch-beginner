@@ -55,6 +55,7 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 for epoch in range(num_epoches):
     print('epoch {}'.format(epoch + 1))
     print('*' * 10)
+    model.train()
     running_loss = 0.0
     running_acc = 0.0
     for i, data in enumerate(train_loader, 1):
@@ -86,9 +87,9 @@ for epoch in range(num_epoches):
         if i % 300 == 0:
             print('[{}/{}] Loss: {:.6f}, Acc: {:.6f}'.format(
                 epoch + 1, num_epoches, running_loss / (batch_size * i),
-                running_acc / (batch_size * i)))
+                running_acc.cpu().data.numpy() / (batch_size * i)))
     print('Finish {} epoch, Loss: {:.6f}, Acc: {:.6f}'.format(
-        epoch + 1, running_loss / (len(train_dataset)), running_acc / (len(
+        epoch + 1, running_loss / (len(train_dataset)), running_acc.cpu().data.numpy() / (len(
             train_dataset))))
     model.eval()
     eval_loss = 0.
@@ -114,7 +115,7 @@ for epoch in range(num_epoches):
         num_correct = (pred == label).sum()
         eval_acc += num_correct.data
     print('Test Loss: {:.6f}, Acc: {:.6f}'.format(eval_loss / (len(
-        test_dataset)), eval_acc / (len(test_dataset))))
+        test_dataset)), eval_acc.cpu().data.numpy() / (len(test_dataset))))
     print()
 
 # 保存模型
