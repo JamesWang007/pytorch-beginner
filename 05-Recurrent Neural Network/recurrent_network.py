@@ -12,7 +12,8 @@ batch_size = 100
 learning_rate = 1e-3
 num_epoches = 20
 
-# 下载训练集 MNIST 手写数字训练集
+# 下载训练集 MNIST 手写数字训练集 
+
 train_dataset = datasets.MNIST(
     root='./data', train=True, transform=transforms.ToTensor(), download=True)
 
