@@ -5,7 +5,8 @@ Created on Wed Nov 27 16:45:09 2019
 
 @author: james
 """
-
+#############
+# 5.1
 import torch
 from torch import nn
 
@@ -28,12 +29,108 @@ corr2d(X, K)
 
 
 # 2d cnn layer
-class Conv2D(nn.Moudle):
+class Conv2D(nn.Module):
     def __init__(self, kernel_size):
         super(Conv2D, self).__init__()
         self.weight = nn.Parameter(torch.randn(kernel_size))
-        self.bais = nn.Parameter(torch.randn(1))
+        self.bias = nn.Parameter(torch.randn(1))
         
     def forward(self, x):
         return corr2d(x, self.weight) + self.bias
     
+
+X = torch.ones(6, 8)
+X[:, 2:6] =  0
+X
+
+K = torch.tensor([[1, -1]])
+print(K)
+Y = corr2d(X, K)
+Y
+
+
+# build a (1, 2) 2d cnn layer
+conv2d = Conv2D(kernel_size=(1,2))
+
+step = 20
+lr= 0.01
+for i in range(step):
+    Y_hat = conv2d(X)
+    l = ((Y_hat - Y) ** 2).sum()
+    l.backward()
+    
+    # GD
+    conv2d.weight.data -= lr * conv2d.weight.grad
+    conv2d.bias.data -= lr * conv2d.bias.grad
+    # GD zero
+    conv2d.weight.grad.fill_(0)
+    conv2d.bias.grad.fill_(0)
+    
+    if (i + 1) % 5 == 0:
+        print('Step %d, loss %.3f' % (i + 1, l.item()))
+        
+print("weight: ", conv2d.weight.data)
+print("bias: ", conv2d.bias.data)
+
+#############
+# 5.2
+import torch
+from torch import nn
+print(torch.__version__)
+
+# padding
+# 定义一个函数来计算卷积层。它对输入和输出做相应的升维和降维
+def comp_conv2d(conv2d, X):
+    # (1, 1)代表批量大小和通道数（“多输入通道和多输出通道”一节将介绍）均为1
+    X = X.view((1, 1) + X.shape)
+    Y = conv2d(X)
+    return Y.view(Y.shape[2:])  # 排除不关心的前两维：批量和通道
+
+# 注意这里是两侧分别填充1行或列，所以在两侧一共填充2行或列
+conv2d = nn.Conv2d(in_channels=1, out_channels=1, kernel_size=3, padding=1)
+
+X = torch.rand(8, 8)
+comp_conv2d(conv2d, X).shape
+
+
+# 使用高为5、宽为3的卷积核。在高和宽两侧的填充数分别为2和1
+conv2d = nn.Conv2d(in_channels=1, out_channels=1, kernel_size=(5, 3), padding=(2, 1))
+comp_conv2d(conv2d, X).shape
+
+# stride
+conv2d = nn.Conv2d(1, 1, kernel_size=3, padding=1, stride=2)
+comp_conv2d(conv2d, X).shape
+
+conv2d = nn.Conv2d(1, 1, kernel_size=(3, 5), padding=(0, 1), stride=(3, 4))
+comp_conv2d(conv2d, X).shape
+
+
+#############
+# 5.3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
