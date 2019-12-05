@@ -106,7 +106,98 @@ comp_conv2d(conv2d, X).shape
 
 
 #############
-# 5.3
+# 5.3.1
+import torch
+from torch import nn
+import sys
+sys.path.append('..')
+import d2lzh_pytorch as d2l
+
+def corr2d_multi_in(X, K):
+    res = d2l.corr2d(X[0, :, :], K[0, :, :])
+    for i in range(1, X.shape[0]):
+        res += d2l.corr2d(X[i, :, :], K[i, :, :])
+    return res
+
+X = torch.tensor([[[0,1,2],[3,4,5],[6,7,8]],
+                  [[1,2,3],[4,5,6],[7,8,9]]])
+K = torch.tensor([[[0,1],[2,3]],[[1,2],[3,4]]])
+
+corr2d_multi_in(X, K)
+
+# 5.3.2
+def corr2d_multi_in_out(X, K):
+    return torch.stack([corr2d_multi_in(X,k) for k in K])
+
+K = torch.stack([K, K + 1, K + 2])
+K.shape # torch.Size([3,2,2,2])
+
+corr2d_multi_in_out(X, K)
+
+# 5.3.3
+def corr2d_multi_in_out_1x1(X, K):
+    c_i, h, w = X.shape
+    c_o = K.shape[0]
+    X = X.view(c_i, h * w)
+    K = K.view(c_o, c_i)
+    Y = torch.mm(K, X)
+    return Y.view(c_o, h, w)
+
+X = torch.rand(3, 3, 3)
+K = torch.rand(2, 3, 1, 1)
+
+Y1 = corr2d_multi_in_out_1x1(X, K)
+Y2 = corr2d_multi_in_out(X, K)
+
+(Y1 - Y2).norm().item() < 1e-6
+
+#############
+# 5.4.1
+import torch
+from torch import nn
+
+def pool2d(X, pool_size, mode='max'):
+    X = X.float()
+    p_h, p_w = pool_size
+    Y = torch.zeros(X.shape[0] - p_h + 1, X.shape[1] - p_w + 1)
+    for i in range(Y.shape[0]):
+        for j in range(Y.shape[1]):
+            if mode == 'max':
+                Y[i, j] = X[i: i + p_h, j: j + p_w].max()
+            elif mode == 'avg':
+                Y[i, j] = X[i: i + p_h, j: j + p_w].mean()       
+    return Y
+
+X = torch.tensor([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
+pool2d(X, (2, 2))
+
+pool2d(X, (2, 2), 'avg')
+
+# 5.4.2
+X = torch.arange(16, dtype=torch.float).view((1, 1, 4, 4))
+X
+
+pool2d = nn.MaxPool2d(3)
+pool2d(X) 
+
+pool2d = nn.MaxPool2d(3, padding=1, stride=2)
+pool2d(X)
+
+pool2d = nn.MaxPool2d((2, 4), padding=(1, 2), stride=(2, 3))
+pool2d(X)
+
+# 5.4.3
+X = torch.cat((X, X + 1), dim=1)
+X
+
+pool2d = nn.MaxPool2d(3, padding=1, stride=2)
+pool2d(X)
+
+
+
+
+
+
 
 
 
