@@ -1,0 +1,7 @@
+torch09_setup.py
+src/namespace.mypackage.egg-info/PKG-INFO
+src/namespace.mypackage.egg-info/SOURCES.txt
+src/namespace.mypackage.egg-info/dependency_links.txt
+src/namespace.mypackage.egg-info/top_level.txt
+src/namespace/mypackage/__init__.py
+src/namespace/mypackage/mod1.py
